@@ -29,9 +29,22 @@ module "azurerm_virtual_network" {
 module "azurerm_subnet" {
   source               = "../azurerm_subnet"
   address_prefixes     = ["172.24.11.144/28"]
-  name                 = "vgw-${trimprefix(local.resource_group_name, "rg-")}"
+  name                 = "GatewaySubnet"
   resource_group_name  = local.resource_group_name
   virtual_network_name = module.azurerm_virtual_network.name
+}
+module "azurerm_public_ip" {
+  source              = "../azurerm_public_ip"
+  name                = "vnet-${trimprefix(local.resource_group_name, "rg-")}"
+  location            = var.location
+  resource_group_name = local.resource_group_name
+}
+module "azurerm_virtual_network_gateway" {
+  source               = "../azurerm_virtual_network_gateway"
+  name                 = "${trimsuffix(trimprefix(local.resource_group_name, "rg-"), "-1")}-vgw-1"
+  public_ip_address_id = module.azurerm_public_ip.id
+  resource_group_name  = local.resource_group_name
+  subnet_id            = module.azurerm_subnet.id
 }
 module "azurerm_storage_account" {
   source              = "../azurerm_storage_account"

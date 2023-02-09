@@ -16,7 +16,7 @@ variable "group" {
 variable "name" {
   description = "The name of the s3 bucket (Globally unique)"
   type        = string
-  default     = "cnct"
+  default     = "connectivity"
 }
 variable "prefix" {
   description = "The prefix of the s3 bucket (Globally unique)"
