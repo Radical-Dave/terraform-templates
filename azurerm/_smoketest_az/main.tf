@@ -8,7 +8,7 @@ module "local_file_debug" {
 
 #module "write_files" {
 #  source   = "../../../templates/local/write_files"
-  #content  = "clientid=${data.azurerm_client_config.current.client_id}"
-  #filename = "clientid.txt"
+#content  = "clientid=${data.azurerm_client_config.current.client_id}"
+#filename = "clientid.txt"
 #  files  = { "clientid.txt" = "clientid=${data.azurerm_client_config.current.client_id}" }
 #}

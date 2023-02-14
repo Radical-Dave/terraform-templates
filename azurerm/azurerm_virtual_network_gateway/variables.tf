@@ -30,8 +30,8 @@ variable "sku" {
 }
 variable "subnet_id" {
   description = "The subnet_id for the virtual network gateway"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 variable "tags" {
   description = "Tags for the virtual network gateway"

@@ -3,7 +3,7 @@ locals {
   location = length(var.location != null ? var.location : "") > 0 ? var.location : "eastus"
 }
 resource "azurerm_storage_account" "this" {
-  name                     = substr( replace( (startswith( local.name, "st") ? local.name : "st${local.name}" ), "-", ""), 0, 24)
+  name                     = substr(replace((startswith(local.name, "st") ? local.name : "st${local.name}"), "-", ""), 0, 24)
   location                 = local.location
   resource_group_name      = var.resource_group_name
   account_tier             = var.sa_tier

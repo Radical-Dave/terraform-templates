@@ -1,5 +1,5 @@
 locals {
-  name     = coalesce(var.name, length(coalesce(var.resource_group_name, "")) > 0 ? "vnet-${replace(var.resource_group_name,"rg-","")}" : "vnet")
+  name     = coalesce(var.name, length(coalesce(var.resource_group_name, "")) > 0 ? "vnet-${replace(var.resource_group_name, "rg-", "")}" : "vnet")
   location = coalesce(var.location, "eastus")
 }
 resource "azurerm_virtual_network" "this" {

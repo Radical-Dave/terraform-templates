@@ -21,7 +21,7 @@ variable "name" {
 variable "target_dns_servers" {
   description = "The location of the azurerm_private_dns_resolver_forwarding_rule"
   type        = string
-  default = null
+  default     = null
 }
 variable "dns_forwarding_ruleset_id" {
   description = "The dns_forwarding_ruleset_id of the azurerm_private_dns_resolver_forwarding_rule"

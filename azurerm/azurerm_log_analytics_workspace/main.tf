@@ -1,5 +1,5 @@
 locals {
-  name = length(var.name != null ? var.name : "") > 0 ? var.name : "log-${trimprefix(var.resource_group_name,"rg-")}"
+  name = length(var.name != null ? var.name : "") > 0 ? var.name : "log-${trimprefix(var.resource_group_name, "rg-")}"
 }
 resource "azurerm_log_analytics_workspace" "this" {
   name                = local.name

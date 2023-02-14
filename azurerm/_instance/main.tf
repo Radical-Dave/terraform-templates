@@ -17,7 +17,7 @@ locals {
   #name=replace((length(var.name != null ? var.name : "")>0 ? var.name : data.aws_organizations_organization.main.arn),"/[^A-Za-z0-9]-/","")
   #name=replace((length(var.name != null ? var.name : "")>0 ? var.name : data.aws_billing_service_account.current.arn),"/[^A-Za-z0-9]-/","")
   #name=replace((length(var.name != null ? var.name : "")>0 ? var.name : ""),"/[^A-Za-z0-9]-/","")
-  name           = lower(replace((length(var.name != null ? var.name : "") > 0 ? var.name : "BlessedBeyondFoundation"), "/[^A-Za-z0-9]-/", ""))
+  name           = lower(replace((length(var.name != null ? var.name : "") > 0 ? var.name : ""), "/[^A-Za-z0-9]-/", ""))
   backend_bucket = replace(replace((length(var.backend_bucket != null ? var.backend_bucket : "") > 0 ? var.backend_bucket : "${local.name}-backend-bucket"), "{name}", local.name), "/[^A-Za-z0-9]-/", "")
   backend_db     = replace(replace((length(var.backend_db != null ? var.backend_db : "") > 0 ? var.backend_db : "${local.name}-backend-db"), "{name}", local.name), "/[^A-Za-z0-9]-/", "")
 }

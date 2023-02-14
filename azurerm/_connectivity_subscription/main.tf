@@ -3,7 +3,7 @@
 ##
 locals {
   name                = lower(replace((length(var.name != null ? var.name : "") > 0 ? var.name : ""), "/[^A-Za-z0-9]-/", ""))
-  resource_group_name = lower(replace((length(var.resource_group_name != null ? var.resource_group_name : "") > 0 ? var.resource_group_name : "rg-${local.name}-core-${trimsuffix(var.location, "us")}"), "/[^A-Za-z0-9]-/", ""))
+  resource_group_name = lower(replace((length(var.resource_group_name != null ? var.resource_group_name : "") > 0 ? var.resource_group_name : "rg-${local.name}-core-${var.location}"), "/[^A-Za-z0-9]-/", ""))
 }
 module "azurerm_resource_group" {
   source = "../azurerm_resource_group"
@@ -57,4 +57,29 @@ module "azurerm_log_analytics_workspace" {
   name                = "log-${trimprefix(local.resource_group_name, "rg-")}"
   location            = var.location
   resource_group_name = local.resource_group_name
+}
+module "azurerm_network_security_group" {
+  depends_on          = [module.azurerm_resource_group.name]
+  source              = "../azurerm_network_security_group"
+  name                = "nsg-${trimprefix(local.resource_group_name, "rg-")}"
+  location            = var.location
+  resource_group_name = module.azurerm_resource_group.name
+}
+module "azurerm_network_watcher" {
+  depends_on          = [module.azurerm_resource_group.name]
+  source              = "../azurerm_network_watcher"
+  name                = "rg-nw-${trimprefix(local.resource_group_name, "rg-")}"
+  location            = var.location
+  resource_group_name = module.azurerm_resource_group.name
+}
+module "azurerm_network_watcher_flow_log" {
+  depends_on                = [module.azurerm_resource_group.name, module.azurerm_storage_account.id, module.azurerm_network_security_group.id]
+  source                    = "../azurerm_network_watcher_flow_log"
+  name                      = "rg-nw-${trimprefix(local.resource_group_name, "rg-")}"
+  network_security_group_id = module.azurerm_network_security_group.id
+  resource_group_name       = module.azurerm_resource_group.name
+  storage_account_id        = module.azurerm_storage_account.id
+  traffic_analytics_workspace_id = module.azurerm_log_analytics_workspace.workspace_id
+  traffic_analytics_workspace_region = module.azurerm_log_analytics_workspace.location
+  traffic_analytics_workspace_resource_id = module.azurerm_log_analytics_workspace.id
 }
