@@ -1,7 +1,17 @@
+variable "description" {
+  description = "The location of the resource group"
+  type        = string
+  default     = "core"
+}
 variable "enabled" {
   description = "The enabled of the azurerm_network_watcher_flow_log"
   type        = bool
-  default     = true
+  default     = false
+}
+variable "environment" {
+  description = "The environment of the resource group"
+  type        = string
+  default     = "sbx"
 }
 variable "name" {
   description = "The name of the azurerm_network_watcher_flow_log"
@@ -9,6 +19,10 @@ variable "name" {
 }
 variable "network_security_group_id" {
   description = "The network_security_group_id of the azurerm_network_watcher_flow_log"
+  type        = string
+}
+variable "network_watcher_name" {
+  description = "The network_watcher_name of the azurerm_network_watcher_flow_log"
   type        = string
 }
 variable "resource_group_name" {

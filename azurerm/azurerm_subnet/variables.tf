@@ -1,10 +1,20 @@
-variable "name" {
-  description = "The name of the subnet"
+variable "description" {
+  description = "The location of the resource group"
   type        = string
-  default     = null
+  default     = "core"
+}
+variable "environment" {
+  description = "The environment of the resource group"
+  type        = string
+  default     = "sbx"
 }
 variable "location" {
   description = "The location of the subnet"
+  type        = string
+  default     = null
+}
+variable "name" {
+  description = "The name of the subnet"
   type        = string
   default     = null
 }
