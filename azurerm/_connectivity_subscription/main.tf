@@ -43,7 +43,7 @@ module "azurerm_virtual_network" {
   tags                = local.tagset
 }
 module "azurerm_subnet" {
-  depends_on           = [module.azurerm_resource_group, module.azurerm_virtual_network.name]
+  depends_on           = [module.azurerm_resource_group, module.azurerm_virtual_network]
   source               = "../azurerm_subnet"
   address_prefixes     = ["172.24.11.144/28"]
   name                 = "GatewaySubnet"
