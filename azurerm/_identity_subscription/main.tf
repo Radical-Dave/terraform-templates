@@ -86,7 +86,7 @@ module "azurerm_private_dns_zone" {
   tags                = local.tagset
 }
 module "azurerm_private_dns_resolver_outbound_endpoint" {
-  depends_on              = [module.azurerm_resource_group, module.azurerm_private_dns_resolver.id, module.azurerm_subnet.id]
+  depends_on              = [module.azurerm_resource_group, module.azurerm_private_dns_resolver, module.azurerm_subnet_in]
   source                  = "../azurerm_private_dns_resolver_outbound_endpoint"
   location                = var.location
   name                    = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-poe-${var.description}"), "rg-")
@@ -121,7 +121,7 @@ module "azurerm_private_dns_resolver_forwarding_rule" {
   tags                      = local.tagset
 }
 module "azurerm_private_dns_resolver_inbound_endpoint" {
-  depends_on              = [module.azurerm_resource_group, module.azurerm_private_dns_resolver.id, module.azurerm_subnet.id]
+  depends_on              = [module.azurerm_resource_group, module.azurerm_private_dns_resolver.id, module.azurerm_subnet_in]
   source                  = "../azurerm_private_dns_resolver_inbound_endpoint"
   name                    = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-pie-${var.description}"), "rg-")
   private_dns_resolver_id = module.azurerm_private_dns_resolver.id
@@ -139,10 +139,10 @@ module "azurerm_network_security_group" {
   tags                = local.tagset
 }
 module "azurerm_subnet_network_security_group_association" {
-  depends_on                = [module.azurerm_resource_group, module.azurerm_network_security_group.id, module.azurerm_subnet.id]
+  depends_on                = [module.azurerm_resource_group, module.azurerm_network_security_group, module.azurerm_subnet_in]
   source                    = "../azurerm_subnet_network_security_group_association"
   network_security_group_id = module.azurerm_network_security_group.id
-  subnet_id                 = module.azurerm_subnet.id
+  subnet_id                 = module.azurerm_subnet_in.id
 }
 module "azurerm_network_watcher" {
   depends_on          = [module.azurerm_resource_group]
