@@ -29,7 +29,7 @@ module "azurerm_subnet_bastion" {
   source               = "../azurerm_subnet"
   address_prefixes     = ["172.24.11.128/28"]
   name                 = "AzureBastionSubnet"
-  resource_group_name  = module.resource_group_name
+  resource_group_name  = module.azurerm_resource_group_mgmt.name
   virtual_network_name = module.azurerm_virtual_network.name
   tags                 = local.tagset
 }
@@ -39,7 +39,7 @@ module "azurerm_virtual_network" {
   address_space       = ["172.24.11.128/27"]
   name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-vnw-${var.description}"), "rg-")
   location            = var.location
-  resource_group_name = module.resource_group_name
+  resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
 module "azurerm_subnet" {
