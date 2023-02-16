@@ -1,9 +1,10 @@
 locals {
   #name=replace((length(var.name) > 64 ? substr(var.name, 0,63) : var.name), " ", "-")
-  name = length(var.name) > 0 ? var.name : length(var.resource_group_name) > 0 ? trimprefix(replace(var.resource_group_name, "${var.environment}-${var.description}", "${var.environment}-nwfl-${var.description}"), "rg-") : "io-${var.environment}-nwfl-${var.description}-1"
+  name = length(var.name) > 0 ? var.name : length(var.resource_group_name) > 0 ? trimprefix(replace(var.resource_group_name, "${var.environment}-${var.description}", "${var.environment}-nwf-${var.description}"), "rg-") : "io-${var.environment}-nwf-${var.description}-1"
 }
 resource "azurerm_network_watcher_flow_log" "this" {
   enabled                   = var.enabled
+  name                      = var.name
   network_security_group_id = var.network_security_group_id
   network_watcher_name      = var.network_watcher_name
   resource_group_name       = var.resource_group_name

@@ -1,7 +1,7 @@
 variable "appid" {
   description = "The appid of the resources"
   type        = string
-  default     = "blueoftennessee"
+  default     = "connectivity"
 }
 variable "autostartwd" {
   description = "The autostartwd of the resources"
@@ -33,15 +33,10 @@ variable "autostopsu" {
   type        = string
   default     = "n"
 }
-variable "hostname" {
-  description = "The hostname of the resources"
-  type        = string
-  default     = "n"
-}
 variable "terraform" {
   description = "The terraform of the resources / scriptname"
   type        = string
-  default     = "y"
+  default     = "_connectivity_subscription"
 }
 variable "cleardata" {
   description = "The cleardata of the resources - y, n, b"
@@ -51,7 +46,7 @@ variable "cleardata" {
 variable "costcenter" {
   description = "The costcenter of the resources"
   type        = string
-  default     = "5308"
+  default     = "0930"
 }
 variable "criticality" {
   description = "The criticality of the resources - secret, confidential, internal, public, internalprotected, externalprotected"
@@ -89,16 +84,6 @@ variable "location" {
   type        = string
   default     = "eastus"
 }
-variable "backend_db" {
-  description = "The backend_db of the resource group"
-  type        = string
-  default     = "{name}-backend-db"
-}
-variable "group" {
-  description = "The group of the resources"
-  type        = string
-  default     = "DevOps"
-}
 variable "name" {
   description = "The name of the resources"
   type        = string
@@ -107,7 +92,7 @@ variable "name" {
 variable "owner" {
   description = "The owner of the resources"
   type        = string
-  default     = "joseph_rinckey"
+  default     = "JR_Johnson"
 }
 variable "prefix" {
   description = "The prefix/department of the resources"

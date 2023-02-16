@@ -3,10 +3,18 @@ locals {
   location = length(var.location != null ? var.location : "") > 0 ? var.location : "eastus"
 }
 resource "azurerm_storage_account" "this" {
-  name                     = substr(replace((startswith(local.name, "st") ? local.name : "st${local.name}"), "-", ""), 0, 24)
-  location                 = local.location
-  resource_group_name      = var.resource_group_name
-  account_tier             = var.sa_tier
-  account_replication_type = var.sa_reptype
-  tags                     = var.tags
+  name                            = substr(replace((startswith(local.name, "st") ? local.name : "st${local.name}"), "-", ""), 0, 24)
+  account_tier                    = var.account_tier
+  account_replication_type        = var.account_replication_type
+  allow_nested_items_to_be_public = var.allow_nested_items_to_be_public
+  location                        = local.location
+  public_network_access_enabled   = var.public_network_access_enabled
+  resource_group_name             = var.resource_group_name
+  tags                            = var.tags
+  network_rules {
+    default_action             = "Deny"
+    ip_rules                   = []
+    bypass                     = ["AzureServices"]
+    virtual_network_subnet_ids = var.virtual_network_subnet_ids
+  }
 }
