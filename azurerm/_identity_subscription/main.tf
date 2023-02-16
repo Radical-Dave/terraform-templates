@@ -28,7 +28,7 @@ module "azurerm_storage_account" {
   depends_on          = [module.azurerm_resource_group_mgmt]
   source              = "../azurerm_storage_account"
   location            = var.location
-  name                = "st${replace(trimprefix(local.name, "rg-"), "core", "diag")}"
+  name                = "st${replace(trimprefix(local.name, "rg-"), "identity", "identitydiag")}"
   resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
@@ -50,7 +50,17 @@ module "azurerm_virtual_network" {
   resource_group_name = module.azurerm_resource_group.name
   tags                = local.tagset
 }
-module "azurerm_subnet" {
+module "azurerm_subnet_in" {
+  depends_on           = [module.azurerm_resource_group]
+  source               = "../azurerm_subnet"
+  name                 = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sub-${var.description}"), "rg-")
+  address_prefixes     = ["172.24.11.160/28"]
+  resource_group_name  = module.azurerm_resource_group.name
+  virtual_network_name = module.azurerm_virtual_network.name
+  tags                 = local.tagset
+}
+
+module "azurerm_subnet_out" {
   depends_on           = [module.azurerm_resource_group]
   source               = "../azurerm_subnet"
   name                 = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sub-${var.description}"), "rg-")
@@ -82,7 +92,7 @@ module "azurerm_private_dns_resolver_outbound_endpoint" {
   name                    = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-poe-${var.description}"), "rg-")
   private_dns_resolver_id = module.azurerm_private_dns_resolver.id
   resource_group_name     = module.azurerm_resource_group.name
-  subnet_id               = module.azurerm_subnet.id
+  subnet_id               = module.azurerm_subnet_out.id
   tags                    = local.tagset
 }
 module "azurerm_private_dns_resolver_dns_forwarding_ruleset" {
@@ -117,7 +127,7 @@ module "azurerm_private_dns_resolver_inbound_endpoint" {
   private_dns_resolver_id = module.azurerm_private_dns_resolver.id
   location                = var.location
   resource_group_name     = module.azurerm_resource_group.name
-  subnet_id               = module.azurerm_subnet.id
+  subnet_id               = module.azurerm_subnet_in.id
   tags                    = local.tagset
 }
 module "azurerm_network_security_group" {
