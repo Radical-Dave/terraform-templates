@@ -40,7 +40,6 @@ module "azurerm_log_analytics_workspace" {
   resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
-
 module "azurerm_virtual_network" {
   depends_on          = [module.azurerm_resource_group]
   source              = "../azurerm_virtual_network"
@@ -53,18 +52,17 @@ module "azurerm_virtual_network" {
 module "azurerm_subnet_in" {
   depends_on           = [module.azurerm_resource_group]
   source               = "../azurerm_subnet"
-  name                 = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sub-${var.description}"), "rg-")
+  name                 = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sub-dns-in-${var.description}"), "rg-")
   address_prefixes     = ["172.24.11.160/28"]
   resource_group_name  = module.azurerm_resource_group.name
   virtual_network_name = module.azurerm_virtual_network.name
   tags                 = local.tagset
 }
-
 module "azurerm_subnet_out" {
   depends_on           = [module.azurerm_resource_group]
   source               = "../azurerm_subnet"
-  name                 = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sub-${var.description}"), "rg-")
-  address_prefixes     = ["172.24.11.160/28"]
+  name                 = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sub-dns-out-${var.description}"), "rg-")
+  address_prefixes     = ["172.24.11.176/28"]
   resource_group_name  = module.azurerm_resource_group.name
   virtual_network_name = module.azurerm_virtual_network.name
   tags                 = local.tagset
