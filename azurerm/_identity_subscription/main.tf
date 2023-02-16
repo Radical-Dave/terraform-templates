@@ -25,19 +25,19 @@ module "azurerm_resource_group_mgmt" {
   tags   = local.tagset
 }
 module "azurerm_storage_account" {
-  depends_on          = [module.azurerm_resource_group.name]
+  depends_on          = [module.azurerm_resource_group_mgmt.name]
   source              = "../azurerm_storage_account"
   location            = var.location
   name                = "st${replace(trimprefix(local.name, "rg-"), "core", "diag")}"
-  resource_group_name = module.azurerm_resource_group.name
+  resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
 module "azurerm_log_analytics_workspace" {
-  depends_on          = [module.azurerm_resource_group.name]
+  depends_on          = [module.azurerm_resource_group_mgmt.name]
   source              = "../azurerm_log_analytics_workspace"
-  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-log-${var.description}"), "rg-")
+  name                = trimprefix(replace(module.azurerm_resource_group_mgmt.name, "${var.environment}-${var.description}", "${var.environment}-log-${var.description}"), "rg-")
   location            = var.location
-  resource_group_name = module.azurerm_resource_group.name
+  resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
 

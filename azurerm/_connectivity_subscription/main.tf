@@ -20,9 +20,8 @@ module "azurerm_resource_group" {
   tags   = local.tagset
 }
 module "azurerm_resource_group_mgmt" {
-  depends_on = [module.azurerm_resource_group.name]
   source     = "../azurerm_resource_group"
-  name       = replace(module.azurerm_resource_group.name, var.description, "mgmt")
+  name       = replace(local.resource_group_name, var.description, "mgmt")
   tags       = local.tagset
 }
 module "azurerm_subnet_bastion" {
@@ -68,20 +67,20 @@ module "azurerm_subnet" {
 #  tags = local.tagset
 #}
 module "azurerm_storage_account" {
-  depends_on                 = [module.azurerm_resource_group.name, module.azurerm_subnet.id]
+  depends_on                 = [module.azurerm_resource_group_mgmt.name, module.azurerm_subnet.id]
   source                     = "../azurerm_storage_account"
   location                   = var.location
   name                       = "st${replace(trimprefix(local.name, "rg-"), "core", "diag")}"
-  resource_group_name        = module.azurerm_resource_group.name
+  resource_group_name        = module.azurerm_resource_group_mgmt.name
   virtual_network_subnet_ids = toset([module.azurerm_subnet.id])
   tags                       = local.tagset
 }
 module "azurerm_log_analytics_workspace" {
-  depends_on          = [module.azurerm_resource_group.name]
+  depends_on          = [module.azurerm_resource_group_mgmt.name]
   source              = "../azurerm_log_analytics_workspace"
-  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-log-${var.description}"), "rg-")
+  name                = trimprefix(replace(module.azurerm_resource_group_mgmt.name, "${var.environment}-${var.description}", "${var.environment}-log-${var.description}"), "rg-")
   location            = var.location
-  resource_group_name = module.azurerm_resource_group.name
+  resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
 module "azurerm_network_security_group" {
