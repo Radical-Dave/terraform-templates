@@ -25,7 +25,7 @@ module "azurerm_resource_group_mgmt" {
   tags       = local.tagset
 }
 module "azurerm_subnet_bastion" {
-  depends_on           = [module.azurerm_resource_group.name]
+  depends_on           = [module.azurerm_resource_group]
   source               = "../azurerm_subnet"
   address_prefixes     = ["172.24.11.128/28"]
   name                 = "AzureBastionSubnet"
@@ -34,7 +34,7 @@ module "azurerm_subnet_bastion" {
   tags                 = local.tagset
 }
 module "azurerm_virtual_network" {
-  depends_on          = [module.azurerm_resource_group.name]
+  depends_on          = [module.azurerm_resource_group]
   source              = "../azurerm_virtual_network"
   address_space       = ["172.24.11.128/27"]
   name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-vnw-${var.description}"), "rg-")
@@ -43,7 +43,7 @@ module "azurerm_virtual_network" {
   tags                = local.tagset
 }
 module "azurerm_subnet" {
-  depends_on           = [module.azurerm_resource_group.name]
+  depends_on           = [module.azurerm_resource_group, module.azurerm_virtual_network.name]
   source               = "../azurerm_subnet"
   address_prefixes     = ["172.24.11.144/28"]
   name                 = "GatewaySubnet"
@@ -67,7 +67,7 @@ module "azurerm_subnet" {
 #  tags = local.tagset
 #}
 module "azurerm_storage_account" {
-  depends_on                 = [module.azurerm_resource_group_mgmt.name, module.azurerm_subnet.id]
+  depends_on                 = [module.azurerm_resource_group_mgmt, module.azurerm_subnet]
   source                     = "../azurerm_storage_account"
   location                   = var.location
   name                       = "st${replace(trimprefix(local.name, "rg-"), "core", "diag")}"
@@ -76,7 +76,7 @@ module "azurerm_storage_account" {
   tags                       = local.tagset
 }
 module "azurerm_log_analytics_workspace" {
-  depends_on          = [module.azurerm_resource_group_mgmt.name]
+  depends_on          = [module.azurerm_resource_group_mgmt]
   source              = "../azurerm_log_analytics_workspace"
   name                = trimprefix(replace(module.azurerm_resource_group_mgmt.name, "${var.environment}-${var.description}", "${var.environment}-log-${var.description}"), "rg-")
   location            = var.location
@@ -84,7 +84,7 @@ module "azurerm_log_analytics_workspace" {
   tags                = local.tagset
 }
 module "azurerm_network_security_group" {
-  depends_on          = [module.azurerm_resource_group.name]
+  depends_on          = [module.azurerm_resource_group]
   source              = "../azurerm_network_security_group"
   name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-nsg-${var.description}"), "rg-")
   location            = var.location
@@ -98,7 +98,7 @@ module "azurerm_subnet_network_security_group_association" {
   subnet_id                 = module.azurerm_subnet.id
 }
 module "azurerm_network_watcher" {
-  depends_on          = [module.azurerm_resource_group.name]
+  depends_on          = [module.azurerm_resource_group]
   source              = "../azurerm_network_watcher"
   description         = var.description
   environment         = var.environment
@@ -108,7 +108,7 @@ module "azurerm_network_watcher" {
   tags                = local.tagset
 }
 #module "azurerm_network_watcher_flow_log" {
-#  depends_on                              = [module.azurerm_resource_group.name, module.azurerm_storage_account.id, module.azurerm_network_security_group.id]
+#  depends_on                              = [module.azurerm_resource_group, module.azurerm_storage_account.id, module.azurerm_network_security_group.id]
 #  source                                  = "../azurerm_network_watcher_flow_log"
 #  description                             = var.description
 #  environment                             = var.environment
