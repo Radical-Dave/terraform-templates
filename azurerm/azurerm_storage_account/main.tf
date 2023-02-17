@@ -3,7 +3,7 @@ locals {
   location = length(var.location != null ? var.location : "") > 0 ? var.location : "eastus"
 }
 resource "azurerm_storage_account" "this" {
-  name                            = substr(replace((startswith(local.name, "st") ? local.name : "st${local.name}"), "-", ""), 0, 24)
+  name                            = substr(replace(local.name, "-", ""), 0, 24)
   account_tier                    = var.account_tier
   account_replication_type        = var.account_replication_type
   allow_nested_items_to_be_public = var.allow_nested_items_to_be_public
