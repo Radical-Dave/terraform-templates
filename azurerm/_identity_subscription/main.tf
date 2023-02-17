@@ -110,7 +110,7 @@ module "azurerm_private_dns_resolver_dns_forwarding_ruleset" {
   tags                                       = local.tagset
 }
 module "azurerm_private_dns_resolver_virtual_network_link" {
-  depends_on                = [module.azurerm_resource_group, module.azurerm_private_dns_resolver_dns_forwarding_ruleset, module.azurerm_virtual_network.id]
+  depends_on                = [module.azurerm_resource_group, module.azurerm_private_dns_resolver_dns_forwarding_ruleset, module.azurerm_virtual_network]
   source                    = "../azurerm_private_dns_resolver_virtual_network_link"
   dns_forwarding_ruleset_id = module.azurerm_private_dns_resolver_dns_forwarding_ruleset.id
   name                      = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-vnl-${var.description}"), "rg-")
@@ -118,7 +118,7 @@ module "azurerm_private_dns_resolver_virtual_network_link" {
   virtual_network_id        = module.azurerm_virtual_network.id
 }
 module "azurerm_private_dns_resolver_forwarding_rule" {
-  depends_on                = [module.azurerm_resource_group, module.azurerm_private_dns_resolver_dns_forwarding_ruleset.id]
+  depends_on                = [module.azurerm_resource_group, module.azurerm_private_dns_resolver_dns_forwarding_ruleset]
   source                    = "../azurerm_private_dns_resolver_forwarding_rule"
   dns_forwarding_ruleset_id = module.azurerm_private_dns_resolver_dns_forwarding_ruleset.id
   domain_name               = var.domain_name
@@ -126,7 +126,7 @@ module "azurerm_private_dns_resolver_forwarding_rule" {
   tags                      = local.tagset
 }
 module "azurerm_private_dns_resolver_inbound_endpoint" {
-  depends_on              = [module.azurerm_resource_group, module.azurerm_private_dns_resolver.id, module.azurerm_subnet_in]
+  depends_on              = [module.azurerm_resource_group, module.azurerm_private_dns_resolver, module.azurerm_subnet_in]
   source                  = "../azurerm_private_dns_resolver_inbound_endpoint"
   name                    = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-iep-${var.description}"), "rg-")
   private_dns_resolver_id = module.azurerm_private_dns_resolver.id

@@ -93,7 +93,7 @@ module "azurerm_network_security_group" {
   tags                = local.tagset
 }
 module "azurerm_subnet_network_security_group_association" {
-  depends_on                = [module.azurerm_network_security_group.id, module.azurerm_subnet.id]
+  depends_on                = [module.azurerm_network_security_group, module.azurerm_subnet]
   source                    = "../azurerm_subnet_network_security_group_association"
   network_security_group_id = module.azurerm_network_security_group.id
   subnet_id                 = module.azurerm_subnet.id
