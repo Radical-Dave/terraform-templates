@@ -24,23 +24,23 @@ module "azurerm_resource_group_mgmt" {
   name       = replace(local.resource_group_name, var.description, "mgmt")
   tags       = local.tagset
 }
-module "azurerm_subnet_bastion" {
-  depends_on           = [module.azurerm_resource_group]
-  source               = "../azurerm_subnet"
-  address_prefixes     = ["172.24.11.128/28"]
-  name                 = "AzureBastionSubnet"
-  resource_group_name  = module.azurerm_resource_group_mgmt.name
-  virtual_network_name = module.azurerm_virtual_network.name
-  tags                 = local.tagset
-}
 module "azurerm_virtual_network" {
   depends_on          = [module.azurerm_resource_group]
   source              = "../azurerm_virtual_network"
   address_space       = ["172.24.11.128/27"]
   name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-vnw-${var.description}"), "rg-")
   location            = var.location
-  resource_group_name = module.azurerm_resource_group_mgmt.name
+  resource_group_name = module.azurerm_resource_group.name
   tags                = local.tagset
+}
+module "azurerm_subnet_bastion" {
+  depends_on           = [module.azurerm_resource_group, module.azurerm_virtual_network]
+  source               = "../azurerm_subnet"
+  address_prefixes     = ["172.24.11.128/28"]
+  name                 = "AzureBastionSubnet"
+  resource_group_name  = module.azurerm_resource_group_mgmt.name
+  virtual_network_name = module.azurerm_virtual_network.name
+  tags                 = local.tagset
 }
 module "azurerm_subnet" {
   depends_on           = [module.azurerm_resource_group, module.azurerm_virtual_network]
@@ -67,11 +67,10 @@ module "azurerm_subnet" {
 #  tags = local.tagset
 #}
 module "azurerm_storage_account" {
-  depends_on                 = [module.azurerm_resource_group_mgmt, module.azurerm_subnet]
+  depends_on                 = [module.azurerm_resource_group, module.azurerm_resource_group_mgmt, module.azurerm_subnet]
   source                     = "../azurerm_storage_account"
   location                   = var.location
-  name                       = "st${replace(trimprefix(local.name, "rg-"), "core", "diag")}"
-  #name                = "st${replace(trimprefix(module.azurerm_resource_group.name, "rg-"), var.description, "diag")}"
+  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-st-${var.description}"), "rg-")
   resource_group_name        = module.azurerm_resource_group_mgmt.name
   virtual_network_subnet_ids = toset([module.azurerm_subnet.id])
   tags                       = local.tagset
