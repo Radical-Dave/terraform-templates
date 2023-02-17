@@ -70,7 +70,7 @@ module "azurerm_storage_account" {
   depends_on                 = [module.azurerm_resource_group, module.azurerm_resource_group_mgmt, module.azurerm_subnet]
   source                     = "../azurerm_storage_account"
   location                   = var.location
-  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-st-${var.description}"), "rg-")
+  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sto-${var.description}"), "rg-")
   resource_group_name        = module.azurerm_resource_group_mgmt.name
   virtual_network_subnet_ids = toset([module.azurerm_subnet.id])
   tags                       = local.tagset

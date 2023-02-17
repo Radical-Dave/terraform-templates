@@ -28,7 +28,7 @@ module "azurerm_storage_account" {
   depends_on          = [module.azurerm_resource_group_mgmt]
   source              = "../azurerm_storage_account"
   location            = var.location
-  name                = "st${replace(trimprefix(module.azurerm_resource_group.name, "rg-"), var.description, "diag")}"
+name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sto-${var.description}"), "rg-")
   resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
