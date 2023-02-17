@@ -28,7 +28,7 @@ module "azurerm_storage_account" {
   depends_on          = [module.azurerm_resource_group_mgmt]
   source              = "../azurerm_storage_account"
   location            = var.location
-  name                = "st${replace(trimprefix(local.name, "rg-"), "identity", "identitydiag")}"
+  name                = "st${replace(trimprefix(module.azurerm_resource_group.name, "rg-"), var.description, "diag")}"
   resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
@@ -71,7 +71,7 @@ module "azurerm_private_dns_resolver" {
   depends_on          = [module.azurerm_resource_group, module.azurerm_virtual_network]
   source              = "../azurerm_private_dns_resolver"
   location            = var.location
-  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-dnr-${var.description}"), "rg-")
+  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-prs-${var.description}"), "rg-")
   resource_group_name = module.azurerm_resource_group.name
   virtual_network_id  = module.azurerm_virtual_network.id
   tags                = local.tagset
@@ -79,7 +79,14 @@ module "azurerm_private_dns_resolver" {
 module "azurerm_private_dns_zone" {
   depends_on          = [module.azurerm_resource_group]
   source              = "../azurerm_private_dns_zone"
-  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-dnz-${var.description}"), "rg-")
+  name                = "${trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-${var.description}"), "rg-")}.azurewebsites.net"
+  resource_group_name = module.azurerm_resource_group.name
+  tags                = local.tagset
+}
+module "azurerm_private_dns_zone_azure_automation_net" {
+  depends_on          = [module.azurerm_resource_group]
+  source              = "../azurerm_private_dns_zone"
+  name                = "${trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-${var.description}"), "rg-")}.azure-automation.net"
   resource_group_name = module.azurerm_resource_group.name
   tags                = local.tagset
 }
@@ -87,7 +94,7 @@ module "azurerm_private_dns_resolver_outbound_endpoint" {
   depends_on              = [module.azurerm_resource_group, module.azurerm_private_dns_resolver, module.azurerm_subnet_in]
   source                  = "../azurerm_private_dns_resolver_outbound_endpoint"
   location                = var.location
-  name                    = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-poe-${var.description}"), "rg-")
+  name                    = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-oep-${var.description}"), "rg-")
   private_dns_resolver_id = module.azurerm_private_dns_resolver.id
   resource_group_name     = module.azurerm_resource_group.name
   subnet_id               = module.azurerm_subnet_out.id
@@ -97,7 +104,7 @@ module "azurerm_private_dns_resolver_dns_forwarding_ruleset" {
   depends_on                                 = [module.azurerm_resource_group, module.azurerm_private_dns_resolver_outbound_endpoint]
   source                                     = "../azurerm_private_dns_resolver_dns_forwarding_ruleset"
   location                                   = var.location
-  name                                       = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-prs-${var.description}"), "rg-")
+  name                                       = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-rus-${var.description}"), "rg-")
   private_dns_resolver_outbound_endpoint_ids = [module.azurerm_private_dns_resolver_outbound_endpoint.id]
   resource_group_name                        = module.azurerm_resource_group.name
   tags                                       = local.tagset
@@ -115,13 +122,13 @@ module "azurerm_private_dns_resolver_forwarding_rule" {
   source                    = "../azurerm_private_dns_resolver_forwarding_rule"
   dns_forwarding_ruleset_id = module.azurerm_private_dns_resolver_dns_forwarding_ruleset.id
   domain_name               = var.domain_name
-  name                      = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-pfr-${var.description}"), "rg-")
+  name                      = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-rul-${var.description}"), "rg-")
   tags                      = local.tagset
 }
 module "azurerm_private_dns_resolver_inbound_endpoint" {
   depends_on              = [module.azurerm_resource_group, module.azurerm_private_dns_resolver.id, module.azurerm_subnet_in]
   source                  = "../azurerm_private_dns_resolver_inbound_endpoint"
-  name                    = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-pie-${var.description}"), "rg-")
+  name                    = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-iep-${var.description}"), "rg-")
   private_dns_resolver_id = module.azurerm_private_dns_resolver.id
   location                = var.location
   resource_group_name     = module.azurerm_resource_group.name

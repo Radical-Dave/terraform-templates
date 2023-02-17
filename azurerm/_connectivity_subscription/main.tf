@@ -71,6 +71,7 @@ module "azurerm_storage_account" {
   source                     = "../azurerm_storage_account"
   location                   = var.location
   name                       = "st${replace(trimprefix(local.name, "rg-"), "core", "diag")}"
+  #name                = "st${replace(trimprefix(module.azurerm_resource_group.name, "rg-"), var.description, "diag")}"
   resource_group_name        = module.azurerm_resource_group_mgmt.name
   virtual_network_subnet_ids = toset([module.azurerm_subnet.id])
   tags                       = local.tagset
