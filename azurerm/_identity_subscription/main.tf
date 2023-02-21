@@ -28,7 +28,7 @@ module "azurerm_storage_account" {
   depends_on          = [module.azurerm_resource_group_mgmt]
   source              = "../azurerm_storage_account"
   location            = var.location
-name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sto-${var.description}"), "rg-")
+  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-sto-${var.description}"), "rg-")
   resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
 }
@@ -79,14 +79,9 @@ module "azurerm_private_dns_resolver" {
 module "azurerm_private_dns_zone" {
   depends_on          = [module.azurerm_resource_group]
   source              = "../azurerm_private_dns_zone"
-  name                = "${trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-${var.description}"), "rg-")}.azurewebsites.net"
-  resource_group_name = module.azurerm_resource_group.name
-  tags                = local.tagset
-}
-module "azurerm_private_dns_zone_azure_automation_net" {
-  depends_on          = [module.azurerm_resource_group]
-  source              = "../azurerm_private_dns_zone"
-  name                = "${trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-${var.description}"), "rg-")}.azure-automation.net"
+  for_each            = { for zone in csvdecode(file("./zones.csv")) : zone.name => zone }
+  # name                = "privatelink.${trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-${var.description}"), "rg-")}.${each.value.name}"
+  name                = "privatelink.${each.value.name}"
   resource_group_name = module.azurerm_resource_group.name
   tags                = local.tagset
 }
