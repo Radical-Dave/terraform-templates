@@ -1,7 +1,7 @@
 data "azurerm_client_config" "current" {
 }
 module "local_file_debug" {
-  source   = "../../../templates/local/local_file"
+  source   = "../../local/local_file"
   content  = "clientid=${data.azurerm_client_config.current.client_id}"
   filename = "clientid.txt"
 }
