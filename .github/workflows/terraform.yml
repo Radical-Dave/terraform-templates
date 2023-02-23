@@ -43,7 +43,7 @@
 #         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 defaults:
   run:
-    working-directory: ${{ env.tf_actions_working_dir }}/azurerm/_smoketest_az
+    working-directory: /azurerm/_smoketest_az
 name: 'Terraform'
 
 on:
