@@ -5,6 +5,11 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.Repository.LocalPath)'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: UniversalPackages@0
   inputs:
     command: 'publish'
