@@ -8,7 +8,9 @@ steps:
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.Repository.LocalPath)'
-    Contents: '**'
+    Contents: |
+      azurerm/**
+      local/**
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: UniversalPackages@0
   inputs:
