@@ -10,7 +10,7 @@ steps:
     command: 'publish'
     publishDirectory: '$(Build.ArtifactStagingDirectory)'
     feedsToUsePublish: 'internal'
-    vstsFeedPublish: '6a528f3d-6964-4b48-8982-2b996a53962a/fbd4e452-6a63-4cdb-bc6f-418c1d0a9719'
+    vstsFeedPublish: '0176f1d2-6521-4fcb-8ea0-d656f0bee373/757afba2-1461-4bba-b690-c4e73f14e99b'
     vstsFeedPackagePublish: 'terraform-modules'
     versionOption: 'patch'
     packagePublishDescription: 'terraform-modules'
