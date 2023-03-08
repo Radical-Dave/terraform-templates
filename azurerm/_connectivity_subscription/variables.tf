@@ -66,7 +66,7 @@ variable "description" {
 variable "environment" {
   description = "The environment of the resource group"
   type        = string
-  default     = "sbx"
+  default     = "prod"
 }
 variable "schdbypass" {
   description = "The schdbypass of the resources: n, a, y, pr"

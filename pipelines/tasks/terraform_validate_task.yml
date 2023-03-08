@@ -1,0 +1,14 @@
+parameters:
+- name: TerraformDirectory
+  type: string
+- name: additionalParameters
+  type: string
+- name: outputFile
+  default: 'terraform.tfvalidate'
+steps:
+    - task: TerraformTaskV2@2
+      displayName: 'Terraform : validate'
+      inputs:
+        command: validate
+        workingDirectory: ${{ parameters.TerraformDirectory }}
+        commandOptions: ${{ parameters.additionalParameters }}

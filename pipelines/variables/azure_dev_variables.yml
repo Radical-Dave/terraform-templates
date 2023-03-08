@@ -1,0 +1,5 @@
+variables:
+  - name: azureServiceConnectionName
+    value: 'AzureDevServiceConnection'
+  - name: azureSubscriptionID
+    value: ''
