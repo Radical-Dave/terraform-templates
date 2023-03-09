@@ -1,0 +1,85 @@
+# Terraform build pipeline for pull requests - builds/plans all to be reviewed for approval
+variables:
+  az_subscription: 'azure-subscription'
+  tf_branch_base: 'main'
+  tf_directory: '$(System.DefaultWorkingDirectory)/azurerm'
+  terraform_version: '1.3.9'
+  tf_init_cli_options: '-input=false'
+  tf_validate_cli_options: ''
+  tf_plan_cli_options: '-lock=false -input=false'
+  tf_apply_cli_options: '-auto-approve -input=false'
+  tf_provider: 'azurerm'
+  tf_state_rg: 'demo-azuredevops-terraform'
+  tf_state_sa: 'sademoazuredevopsterr'
+  tf_state_container: 'tfstate'
+  
+stages:
+- stage: 'Terraform_Plan_connectivity_subscription'
+  jobs:
+  - deployment: 'Terraform_Plan_connectivity_subscription'
+    displayName: 'Terraform Plan: connectivity_subscription'
+    continueOnError: 'false'
+    environment: 'Terraform_Plan'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - task: TerraformInstaller@0
+              displayName: 'Terraform: Install $(terraform_version)'
+              inputs:
+                terraformVersion: $(terraform_version)
+
+            - task: TerraformTaskV2@2
+              displayName: 'Terraform: Init'
+              inputs:
+                backendServiceArm: $(az_subscription)
+                backendAzureRmResourceGroupName: $(tf_state_rg)
+                backendAzureRmStorageAccountName: $(tf_state_sa)
+                backendAzureRmContainerName: $(tf_state_container)
+                backendAzureRmKey: '_connectivity_subscription/_connectivity_subscription'
+                command: init
+                commandOptions: $(tf_init_cli_options)                
+                provider: $(tf_provider)
+                workingDirectory: $(tf_directory)/_connectivity_subscription
+
+            - task: TerraformTaskV2@2
+              displayName: 'Terraform: Plan'
+              inputs:
+                command: plan
+                commandOptions: $(tf_plan_cli_options)
+                environmentServiceNameAzureRM: $(az_subscription)
+                workingDirectory: $(tf_directory)/_connectivity_subscription
+
+- stage: 'Terraform_Plan_identity_subscription'
+  jobs:
+  - deployment: 'Terraform_Plan_identity_subscription'
+    displayName: 'Terraform_Plan: identity_subscription'
+    continueOnError: 'false'
+    # Run this stage if previous stage(s) succeeded and build reason ISN'T a pull request
+    #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    environment: 'Terraform_Plan'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - task: TerraformInstaller@0
+              displayName: 'Terraform: Install $(terraform_version)'
+              inputs:
+                terraformVersion: $(terraform_version)
+
+            - task: TerraformTaskV2@2
+              displayName: 'Terraform: Init'
+              inputs:
+                backendServiceArm: $(az_subscription)
+                backendAzureRmResourceGroupName: $(tf_state_rg)
+                backendAzureRmStorageAccountName: $(tf_state_sa)
+                backendAzureRmContainerName: $(tf_state_container)
+                backendAzureRmKey: '_identity_subscription/_identity_subscription'
+                command: init
+                commandOptions: $(tf_init_cli_options)                
+                provider: $(tf_provider)
+                workingDirectory: $(tf_directory)/_identity_subscription
