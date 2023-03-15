@@ -35,7 +35,7 @@ module "azurerm_storage_account" {
 module "azurerm_log_analytics_workspace" {
   depends_on          = [module.azurerm_resource_group_mgmt]
   source              = "../azurerm_log_analytics_workspace"
-  name                = trimprefix(replace(module.azurerm_resource_group_mgmt.name, "${var.environment}-${var.description}", "${var.environment}-log-${var.description}"), "rg-")
+  name                = trimprefix(replace(module.azurerm_resource_group_mgmt.name, "${var.environment}-${var.description}", "${var.environment}-law-${var.description}"), "rg-")
   location            = var.location
   resource_group_name = module.azurerm_resource_group_mgmt.name
   tags                = local.tagset
@@ -57,6 +57,13 @@ module "azurerm_subnet_in" {
   resource_group_name  = module.azurerm_resource_group.name
   virtual_network_name = module.azurerm_virtual_network.name
   tags                 = local.tagset
+  delegations = [{
+    name = "Microsoft.Network/dnsResolvers"
+    service_delegation = [{
+      name = "Microsoft.Network/dnsResolvers"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }]
+  }]
 }
 module "azurerm_subnet_out" {
   depends_on           = [module.azurerm_resource_group]
@@ -66,6 +73,13 @@ module "azurerm_subnet_out" {
   resource_group_name  = module.azurerm_resource_group.name
   virtual_network_name = module.azurerm_virtual_network.name
   tags                 = local.tagset
+  delegations = [{
+    name = "Microsoft.Network/dnsResolvers"
+    service_delegation = [{
+      name = "Microsoft.Network/dnsResolvers"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }]
+  }]
 }
 module "azurerm_private_dns_resolver" {
   depends_on          = [module.azurerm_resource_group, module.azurerm_virtual_network]
@@ -112,6 +126,15 @@ module "azurerm_private_dns_resolver_virtual_network_link" {
   resource_group_name       = module.azurerm_resource_group.name
   virtual_network_id        = module.azurerm_virtual_network.id
 }
+module "azurerm_private_dns_resolver_virtual_network_link_to_agent" {
+  depends_on                = [module.azurerm_resource_group, module.azurerm_private_dns_resolver_dns_forwarding_ruleset, module.azurerm_virtual_network]
+  source                    = "../azurerm_private_dns_resolver_virtual_network_link"
+  dns_forwarding_ruleset_id = module.azurerm_private_dns_resolver_dns_forwarding_ruleset.id
+  name                      = "link-to-agent"
+  #name = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-vnl-${var.description}"), "rg-")
+  resource_group_name       = module.azurerm_resource_group.name
+  virtual_network_id        = module.azurerm_virtual_network.id
+}
 module "azurerm_private_dns_resolver_forwarding_rule" {
   depends_on                = [module.azurerm_resource_group, module.azurerm_private_dns_resolver_dns_forwarding_ruleset]
   source                    = "../azurerm_private_dns_resolver_forwarding_rule"
@@ -144,16 +167,16 @@ module "azurerm_subnet_network_security_group_association" {
   network_security_group_id = module.azurerm_network_security_group.id
   subnet_id                 = module.azurerm_subnet_in.id
 }
-module "azurerm_network_watcher" {
-  depends_on          = [module.azurerm_resource_group]
-  source              = "../azurerm_network_watcher"
-  description         = var.description
-  environment         = var.environment
-  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-nw-${var.description}"), "rg-")
-  location            = var.location
-  resource_group_name = module.azurerm_resource_group.name
-  tags                = local.tagset
-}
+#module "azurerm_network_watcher" {
+#  depends_on          = [module.azurerm_resource_group]
+#  source              = "../azurerm_network_watcher"
+#  description         = var.description
+#  environment         = var.environment
+#  name                = trimprefix(replace(module.azurerm_resource_group.name, "${var.environment}-${var.description}", "${var.environment}-nw-${var.description}"), "rg-")
+#  location            = var.location
+#  resource_group_name = module.azurerm_resource_group.name
+#  tags                = local.tagset
+#}
 #module "azurerm_network_watcher_flow_log" {
 #  depends_on                              = [module.azurerm_resource_group, module.azurerm_storage_account.id, module.azurerm_network_security_group.id]
 #  source                                  = "../azurerm_network_watcher_flow_log"
